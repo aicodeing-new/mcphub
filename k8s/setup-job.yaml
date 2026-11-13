@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mcphub-schema-setup
+  namespace: mcphub
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 900
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+      - name: setup
+        image: swr.cn-north-4.myhuaweicloud.com/pixiu-public/admins/mcphub:1.2.3
+        command:
+        - node
+        - dist/db/setup.js
+        envFrom:
+        - configMapRef:
+            name: mcphub-runtime-config
+        - secretRef:
+            name: mcphub-runtime-secrets
+        env:
+        - name: DB_SYNCHRONIZE
+          value: 'true'
+        - name: MCPHUB_REPLICA_MODE
+          value: 'false'
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+        volumeMounts:
+        - name: seed
+          mountPath: /etc/mcphub
+          readOnly: true
+      volumes:
+      - name: seed
+        configMap:
+          name: mcphub-db-bootstrap

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcphub
+  namespace: mcphub
+  labels:
+    app: mcphub
+spec:
+  selector:
+    app: mcphub-db
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP

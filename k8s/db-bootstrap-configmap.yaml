@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcphub-db-bootstrap
+  namespace: mcphub
+data:
+  mcp_settings.json: '{"mcpServers":{}}'

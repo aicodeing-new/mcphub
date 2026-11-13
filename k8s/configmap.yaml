@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcphub-config
+  namespace: mcphub
+data:
+  mcp_settings.json: '{"mcpServers":{}}'

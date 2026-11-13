@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mcphub-runtime-config
+  namespace: mcphub
+data:
+  PORT: '3000'
+  INIT_TIMEOUT: '300000'
+  USE_DB: 'true'
+  DB_SYNCHRONIZE: 'false'
+  MCPHUB_REPLICA_MODE: 'true'
+  MCPHUB_SETTING_PATH: /etc/mcphub/mcp_settings.json
+  INSTALL_BASE_URL: https://mcphub.magikcloud.cn
+  TZ: Asia/Shanghai
+  DB_POOL_SIZE: '10'
+  DB_CONNECTION_TIMEOUT: '10000'
+  DB_STATEMENT_TIMEOUT: '30000'

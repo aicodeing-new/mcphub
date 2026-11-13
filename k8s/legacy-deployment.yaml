@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcphub
+  namespace: mcphub
+  labels:
+    app: mcphub
+spec:
+  replicas: 0
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: mcphub
+  template:
+    metadata:
+      labels:
+        app: mcphub
+    spec:
+      initContainers:
+      - name: prepare-config
+        image: swr.cn-north-4.myhuaweicloud.com/pixiu-public/admins/mcphub:1.1.9
+        command:
+        - sh
+        - -c
+        - "set -eu\nif [ ! -f /etc/mcphub/mcp_settings.json ]; then\n  cp /config-ro/mcp_settings.json\
+          \ /etc/mcphub/mcp_settings.json\nfi\n"
+        volumeMounts:
+        - name: config
+          mountPath: /config-ro
+          readOnly: true
+        - name: app-storage
+          mountPath: /etc/mcphub
+      containers:
+      - name: mcphub
+        image: swr.cn-north-4.myhuaweicloud.com/pixiu-public/admins/mcphub:1.1.9
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        env:
+        - name: PORT
+          value: '3000'
+        - name: INIT_TIMEOUT
+          value: '300000'
+        - name: MCPHUB_SETTING_PATH
+          value: /etc/mcphub/mcp_settings.json
+        volumeMounts:
+        - name: app-storage
+          mountPath: /etc/mcphub
+      volumes:
+      - name: config
+        configMap:
+          name: mcphub-config
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: mcphub-data
